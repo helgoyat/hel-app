@@ -1,0 +1,14 @@
+{
+  "name": "helapp",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently --kill-others-on-fail \"npm run dev:backend\" \"npm --prefix Frontend run dev\"",
+    "dev:backend": "sh -c 'lsof -ti tcp:5001 | xargs kill -9 2>/dev/null || true; dotnet run --project Backend/HelApp.Backend.csproj --urls http://localhost:5001'",
+    "dev:frontend": "npm --prefix Frontend run dev",
+    "install:frontend": "npm --prefix Frontend install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
