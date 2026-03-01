@@ -2,6 +2,7 @@ using HelApp.Backend.Data;
 using HelApp.Backend.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,15 +30,34 @@ builder.Services
         options.Audience = auth0Audience;
     });
 
+static bool HasPermission(ClaimsPrincipal user, string permission)
+{
+    if (user.FindAll("permissions").Any(claim => claim.Value == permission))
+    {
+        return true;
+    }
+
+    var scopeValue = user.FindFirst("scope")?.Value;
+
+    if (string.IsNullOrWhiteSpace(scopeValue))
+    {
+        return false;
+    }
+
+    return scopeValue
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Any(scope => scope == permission);
+}
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ReadTodos", policy =>
         policy.RequireAuthenticatedUser()
-              .RequireClaim("permissions", "read:todos"));
+              .RequireAssertion(context => HasPermission(context.User, "read:todos")));
 
     options.AddPolicy("WriteTodos", policy =>
         policy.RequireAuthenticatedUser()
-              .RequireClaim("permissions", "write:todos"));
+              .RequireAssertion(context => HasPermission(context.User, "write:todos")));
 });
 
 builder.Services.AddCors(options =>

@@ -6,6 +6,9 @@ Frontend/dist/
 /dist/
 /build/
 /.env
+Frontend/.env
+Frontend/.env.local
+Frontend/.env.development.local
 .DS_Store
 *.log
 *.tmp
