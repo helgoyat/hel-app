@@ -11,6 +11,14 @@ const error = ref('')
 const savingId = ref(null)
 const writeAccessDenied = ref(false)
 
+function handleLogout() {
+  logout({
+    logoutParams: {
+      returnTo: window.location.origin
+    }
+  })
+}
+
 function getErrorMessageByStatus(status, fallbackMessage) {
   if (status === 403) {
     return 'Permission denied (403). Your account is missing the required Auth0 permission.'
@@ -201,7 +209,7 @@ watch(isAuthenticated, async authenticated => {
       </p>
       <button
         type="button"
-        @click="logout({ logoutParams: { returnTo: window.location.origin } })"
+        @click="handleLogout"
       >
         Log out
       </button>
